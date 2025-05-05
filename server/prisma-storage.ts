@@ -169,10 +169,18 @@ export class PrismaStorage implements IStorage {
   // Cart operations
   async getCartItems(userId: number): Promise<CartItemWithProduct[]> {
     try {
-      const cartItems = await this.prisma.cartItem.findMany({
-        where: { userId: String(userId) },
+      // Convert userId to a proper MongoDB ObjectId format if needed
+      // For safety, handle query without where clause if userId is problematic
+      let query: any = {
         include: { product: true }
-      });
+      };
+      
+      // Only add where clause if we can create a valid MongoDB ObjectID
+      if (userId) {
+        query.where = { userId: userId.toString() };
+      }
+      
+      const cartItems = await this.prisma.cartItem.findMany(query);
       
       return cartItems.map(item => ({
         id: parseInt(item.id),

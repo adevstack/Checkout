@@ -373,8 +373,8 @@ export default function AdminDashboard() {
                       </tr>
                     ))
                   ) : products && products.length > 0 ? (
-                    products.slice(0, 5).map((product) => (
-                      <tr key={product.id}>
+                    products.slice(0, 5).map((product, index) => (
+                      <tr key={`dashboard-product-${product.id}-${index}`}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="flex-shrink-0 h-10 w-10">

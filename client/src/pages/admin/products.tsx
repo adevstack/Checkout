@@ -88,7 +88,7 @@ export default function AdminProducts() {
     if (!user || !user.isAdmin) {
       setLocation("/");
     }
-  }, [user, navigate]);
+  }, [user, setLocation]);
 
   // Fetch products
   const {
