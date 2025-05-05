@@ -111,8 +111,8 @@ export default function Orders() {
             </Button>
           </div>
         ) : orders && orders.length > 0 ? (
-          orders.map((order) => (
-            <div key={order.id} className="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
+          orders.map((order, index) => (
+            <div key={`${order.id}-${index}-${order.createdAt}`} className="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
               <div className="sm:flex sm:items-center sm:justify-between">
                 <div>
                   <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white">
