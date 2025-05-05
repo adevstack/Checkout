@@ -64,7 +64,7 @@ export default function AdminOrders() {
     if (!user || !user.isAdmin) {
       setLocation("/");
     }
-  }, [user, navigate]);
+  }, [user, setLocation]);
 
   // Fetch orders
   const {
