@@ -17,7 +17,7 @@ export default function Orders() {
     if (!user) {
       setLocation("/login");
     }
-  }, [user, navigate]);
+  }, [user, setLocation]);
 
   // Fetch order data
   const { data: orders, isLoading, isError } = useQuery<Order[]>({
