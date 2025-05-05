@@ -233,7 +233,7 @@ export class PrismaStorage implements IStorage {
           console.error(`No product found for cart item with productId ${item.productId}`);
           // Return a partially complete cart item without product data
           return {
-            id: parseInt(item.id),
+            id: item.id, // Keep original MongoDB ID
             userId: parseInt(item.userId),
             productId: parseInt(item.productId),
             quantity: item.quantity,
@@ -254,7 +254,7 @@ export class PrismaStorage implements IStorage {
         
         // If we have the product, we return the full cart item with product data
         return {
-          id: parseInt(item.id),
+          id: item.id, // Keep original MongoDB ID
           userId: parseInt(item.userId),
           productId: parseInt(item.productId),
           quantity: item.quantity,
@@ -315,7 +315,7 @@ export class PrismaStorage implements IStorage {
       }
 
       return {
-        id: parseInt(cartItem.id),
+        id: cartItem.id, // Keep MongoDB ID as string
         userId: parseInt(cartItem.userId),
         productId: parseInt(cartItem.productId),
         quantity: cartItem.quantity,

@@ -272,25 +272,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
   router.put("/cart/:id", authenticateToken, async (req: Request, res: Response) => {
     try {
       const userId = (req as any).user.id;
-      const cartItemId = parseInt(req.params.id);
+      const cartItemId = req.params.id; // Keep ID as is (string)
       const { quantity } = req.body;
+      
+      console.log(`Updating cart item ${cartItemId} for user ${userId} to quantity ${quantity}`);
       
       // Make sure cart item belongs to user
       const cartItems = await storage.getCartItems(userId);
-      const userOwnItem = cartItems.some(item => item.id === cartItemId);
+      const userOwnItem = cartItems.some(item => String(item.id) === String(cartItemId));
       
       if (!userOwnItem) {
+        console.log("User does not own this cart item");
         return res.status(403).json({ message: "Forbidden" });
       }
       
       const cartItem = await storage.updateCartItem(cartItemId, quantity);
       
       if (!cartItem) {
+        console.log("Cart item not found when updating");
         return res.status(404).json({ message: "Cart item not found" });
       }
       
+      console.log("Cart item updated successfully");
       res.json(cartItem);
     } catch (error: any) {
+      console.error("Error updating cart item:", error);
       res.status(400).json({ message: error.message });
     }
   });
@@ -298,24 +304,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   router.delete("/cart/:id", authenticateToken, async (req: Request, res: Response) => {
     try {
       const userId = (req as any).user.id;
-      const cartItemId = parseInt(req.params.id);
+      const cartItemId = req.params.id; // Keep ID as is (string)
+      
+      console.log(`Removing cart item ${cartItemId} for user ${userId}`);
       
       // Make sure cart item belongs to user
       const cartItems = await storage.getCartItems(userId);
-      const userOwnItem = cartItems.some(item => item.id === cartItemId);
+      const userOwnItem = cartItems.some(item => String(item.id) === String(cartItemId));
       
       if (!userOwnItem) {
+        console.log("User does not own this cart item");
         return res.status(403).json({ message: "Forbidden" });
       }
       
       const result = await storage.removeCartItem(cartItemId);
       
       if (!result) {
+        console.log("Cart item not found when removing");
         return res.status(404).json({ message: "Cart item not found" });
       }
       
+      console.log("Cart item removed successfully");
       res.status(204).send();
     } catch (error: any) {
+      console.error("Error removing cart item:", error);
       res.status(400).json({ message: error.message });
     }
   });
