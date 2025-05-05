@@ -24,7 +24,7 @@ export default function OrderSuccess() {
     if (!user) {
       setLocation("/");
     }
-  }, [user, navigate]);
+  }, [user, setLocation]);
 
   if (!user) {
     return null; // Will redirect in useEffect
