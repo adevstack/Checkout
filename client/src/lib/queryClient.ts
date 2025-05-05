@@ -24,6 +24,9 @@ export async function apiRequest(
   }
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
+    console.log("Sending request with token:", token);
+  } else {
+    console.warn("No authentication token found for request to:", url);
   }
 
   const res = await fetch(url, {
@@ -52,6 +55,9 @@ export const getQueryFn: <T>(options: {
     const headers: HeadersInit = {};
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
+      console.log("Query with token:", token);
+    } else {
+      console.warn("No authentication token found for query to:", queryKey[0]);
     }
 
     const res = await fetch(queryKey[0] as string, {
