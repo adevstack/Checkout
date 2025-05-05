@@ -65,6 +65,7 @@ model Order {
   status          String   @default("pending")
   total           Float
   shippingAddress String
+  paymentMethod   String   @default("credit-card")
   createdAt       DateTime @default(now())
   
   // Relations

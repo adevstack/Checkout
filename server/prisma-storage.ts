@@ -455,6 +455,7 @@ export class PrismaStorage implements IStorage {
           status: orderData.status,
           total: orderData.total,
           shippingAddress: orderData.shippingAddress,
+          paymentMethod: orderData.paymentMethod || "credit-card",
           items: {
             create: items.map(item => ({
               productId: String(item.productId),
@@ -471,6 +472,7 @@ export class PrismaStorage implements IStorage {
         status: order.status,
         total: order.total,
         shippingAddress: order.shippingAddress,
+        paymentMethod: order.paymentMethod || "credit-card",
         createdAt: order.createdAt
       };
     } catch (error) {
@@ -492,6 +494,7 @@ export class PrismaStorage implements IStorage {
         status: order.status,
         total: order.total,
         shippingAddress: order.shippingAddress,
+        paymentMethod: order.paymentMethod || "credit-card",
         createdAt: order.createdAt
       };
     } catch (error) {
