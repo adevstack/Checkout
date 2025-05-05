@@ -1,0 +1,37 @@
+2025-05-05T16:46:21.152789997Z ==> Cloning from https://github.com/adevstack/Checkout
+2025-05-05T16:48:20.616405385Z ==> Checking out commit 648785a7ff6dd76aac66ca8840a3fa5cbf5445af in branch main
+2025-05-05T16:48:22.971678314Z ==> Using Node.js version 22.14.0 (default)
+2025-05-05T16:48:22.996188513Z ==> Docs on specifying a Node.js version: https://render.com/docs/node-version
+2025-05-05T16:48:24.827933102Z ==> Using Bun version 1.1.0 (default)
+2025-05-05T16:48:24.827952442Z ==> Docs on specifying a bun version: https://render.com/docs/bun-version
+2025-05-05T16:48:24.873076831Z ==> Running build command 'npm install; npm run build'...
+2025-05-05T16:48:33.184982114Z 
+2025-05-05T16:48:33.185005315Z added 435 packages, and audited 436 packages in 8s
+2025-05-05T16:48:33.185014455Z 
+2025-05-05T16:48:33.185017065Z 56 packages are looking for funding
+2025-05-05T16:48:33.185073086Z   run `npm fund` for details
+2025-05-05T16:48:33.195243127Z 
+2025-05-05T16:48:33.195254778Z 2 moderate severity vulnerabilities
+2025-05-05T16:48:33.195257158Z 
+2025-05-05T16:48:33.195259508Z To address all issues, run:
+2025-05-05T16:48:33.195261518Z   npm audit fix
+2025-05-05T16:48:33.195263298Z 
+2025-05-05T16:48:33.195265188Z Run `npm audit` for details.
+2025-05-05T16:48:33.361476497Z 
+2025-05-05T16:48:33.361497378Z > checkout@1.0.0 build
+2025-05-05T16:48:33.361500928Z > vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+2025-05-05T16:48:33.361504768Z 
+2025-05-05T16:48:33.510936696Z failed to load config from /opt/render/project/src/vite.config.ts
+2025-05-05T16:48:33.511247604Z error during build:
+2025-05-05T16:48:33.511254524Z Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@vitejs/plugin-react' imported from /opt/render/project/src/vite.config.ts.timestamp-1746463713508-0c3fd2b9d0edb.mjs
+2025-05-05T16:48:33.511257684Z     at Object.getPackageJSONURL (node:internal/modules/package_json_reader:268:9)
+2025-05-05T16:48:33.511260594Z     at packageResolve (node:internal/modules/esm/resolve:768:81)
+2025-05-05T16:48:33.511262704Z     at moduleResolve (node:internal/modules/esm/resolve:854:18)
+2025-05-05T16:48:33.511264744Z     at defaultResolve (node:internal/modules/esm/resolve:984:11)
+2025-05-05T16:48:33.511267495Z     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:685:12)
+2025-05-05T16:48:33.511269595Z     at #cachedDefaultResolve (node:internal/modules/esm/loader:634:25)
+2025-05-05T16:48:33.511271695Z     at ModuleLoader.resolve (node:internal/modules/esm/loader:617:38)
+2025-05-05T16:48:33.511273715Z     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:273:38)
+2025-05-05T16:48:33.511275795Z     at ModuleJob._link (node:internal/modules/esm/module_job:135:49)
+2025-05-05T16:48:33.525728296Z ==> Build failed 😞
+2025-05-05T16:48:33.525745007Z ==> Common ways to troubleshoot your deploy: https://render.com/docs/troubleshooting-deploys
