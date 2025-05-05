@@ -156,8 +156,9 @@ export class PrismaStorage implements IStorage {
 
   async deleteProduct(id: number): Promise<boolean> {
     try {
+      const productId = await this.getProductObjectId(id);
       await this.prisma.product.delete({
-        where: { id: String(id) }
+        where: { id: productId }
       });
       return true;
     } catch (error) {
