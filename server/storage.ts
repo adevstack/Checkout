@@ -1,5 +1,5 @@
 import { 
-  users, type User, type InsertUser,
+  users, type User, type InsertUser, type UpdateUserProfile,
   products, type Product, type InsertProduct,
   cartItems, type CartItem, type InsertCartItem,
   orders, type Order, type InsertOrder,
@@ -14,6 +14,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserProfile(id: number, profileData: Partial<UpdateUserProfile>): Promise<User | undefined>;
   
   // Product operations
   getProducts(): Promise<Product[]>;
@@ -165,9 +166,31 @@ export class MemStorage implements IStorage {
 
   async createUser(user: InsertUser): Promise<User> {
     const id = this.userId++;
-    const newUser: User = { ...user, id, createdAt: new Date() };
+    const newUser: User = { 
+      ...user, 
+      id, 
+      role: user.role || "user",
+      fullName: null,
+      phone: null,
+      address: null,
+      city: null,
+      state: null,
+      zipCode: null,
+      country: "United States",
+      preferredPaymentMethod: "card",
+      createdAt: new Date() 
+    };
     this.users.set(id, newUser);
     return newUser;
+  }
+  
+  async updateUserProfile(id: number, profileData: Partial<UpdateUserProfile>): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    
+    const updatedUser = { ...user, ...profileData };
+    this.users.set(id, updatedUser);
+    return updatedUser;
   }
 
   // Product operations
@@ -187,7 +210,13 @@ export class MemStorage implements IStorage {
 
   async createProduct(product: InsertProduct): Promise<Product> {
     const id = this.productId++;
-    const newProduct: Product = { ...product, id, createdAt: new Date() };
+    const newProduct: Product = { 
+      ...product, 
+      id, 
+      rating: product.rating || 0,
+      stock: product.stock || 0,
+      createdAt: new Date() 
+    };
     this.products.set(id, newProduct);
     return newProduct;
   }
@@ -291,7 +320,12 @@ export class MemStorage implements IStorage {
 
   async createOrder(order: InsertOrder, items: InsertOrderItem[]): Promise<Order> {
     const id = this.orderId++;
-    const newOrder: Order = { ...order, id, createdAt: new Date() };
+    const newOrder: Order = { 
+      ...order, 
+      id, 
+      status: order.status || "pending",
+      createdAt: new Date() 
+    };
     this.orders.set(id, newOrder);
     
     items.forEach(item => {
