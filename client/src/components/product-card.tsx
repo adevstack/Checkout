@@ -48,6 +48,10 @@ export default function ProductCard({ product }: ProductCardProps) {
           className={`w-full h-full object-cover transition-transform duration-300 ${
             isHovered ? "scale-110" : "scale-100"
           }`}
+          onError={(e) => {
+            e.currentTarget.src = "https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?auto=format&fit=crop&w=700";
+            e.currentTarget.alt = "Product image not available";
+          }}
         />
       </div>
       <CardContent className="p-4">

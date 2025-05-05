@@ -799,6 +799,33 @@ export class PrismaStorage implements IStorage {
             stock: 50
           },
           {
+            name: "Gaming Laptop",
+            description: "High-performance gaming laptop with RGB keyboard",
+            price: 1299.99,
+            imageUrl: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?auto=format&fit=crop&w=700",
+            category: "Electronics",
+            rating: 4.9,
+            stock: 15
+          },
+          {
+            name: "Wireless Mouse",
+            description: "Ergonomic wireless mouse with long battery life",
+            price: 49.99,
+            imageUrl: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?auto=format&fit=crop&w=700",
+            category: "Electronics",
+            rating: 4.4,
+            stock: 65
+          },
+          {
+            name: "4K Monitor",
+            description: "Ultra-wide 4K monitor for professional work and gaming",
+            price: 399.99,
+            imageUrl: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=700",
+            category: "Electronics",
+            rating: 4.7,
+            stock: 30
+          },
+          {
             name: "Smartphone",
             description: "Latest model with high-resolution camera and fast processor",
             price: 799.99,
@@ -1054,6 +1081,24 @@ export class PrismaStorage implements IStorage {
             category: "Furniture",
             rating: 4.6,
             stock: 25
+          },
+          {
+            name: "Dining Table Set",
+            description: "Modern 6-person dining table set with chairs",
+            price: 749.99,
+            imageUrl: "https://images.unsplash.com/photo-1595438280062-8a79d213afb4?auto=format&fit=crop&w=700",
+            category: "Furniture",
+            rating: 4.8,
+            stock: 10
+          },
+          {
+            name: "King Size Bed",
+            description: "Comfortable king size bed with wooden frame",
+            price: 899.99,
+            imageUrl: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=700",
+            category: "Furniture",
+            rating: 4.7,
+            stock: 8
           },
           {
             name: "Coffee Table",
