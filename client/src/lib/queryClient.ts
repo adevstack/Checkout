@@ -12,9 +12,23 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
+  // Get auth token from localStorage
+  const userJson = localStorage.getItem("user");
+  const user = userJson ? JSON.parse(userJson) : null;
+  const token = user?.token;
+
+  // Prepare headers
+  const headers: HeadersInit = {};
+  if (data) {
+    headers["Content-Type"] = "application/json";
+  }
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers,
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });
@@ -29,7 +43,19 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
+    // Get auth token from localStorage
+    const userJson = localStorage.getItem("user");
+    const user = userJson ? JSON.parse(userJson) : null;
+    const token = user?.token;
+
+    // Prepare headers
+    const headers: HeadersInit = {};
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const res = await fetch(queryKey[0] as string, {
+      headers,
       credentials: "include",
     });
 
