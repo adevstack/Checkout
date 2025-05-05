@@ -8,7 +8,8 @@ import {
   insertProductSchema, 
   insertCartItemSchema, 
   insertOrderSchema,
-  insertOrderItemSchema
+  insertOrderItemSchema,
+  updateUserProfileSchema
 } from "@shared/schema";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -130,6 +131,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Return user without password
       const { password, ...userWithoutPassword } = user;
+      res.json(userWithoutPassword);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  router.put("/users/profile", authenticateToken, async (req: Request, res: Response) => {
+    try {
+      const userId = (req as any).user.id;
+      const profileData = updateUserProfileSchema.parse(req.body);
+      
+      const updatedUser = await storage.updateUserProfile(userId, profileData);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Return user without password
+      const { password, ...userWithoutPassword } = updatedUser;
       res.json(userWithoutPassword);
     } catch (error: any) {
       res.status(400).json({ message: error.message });

@@ -3,6 +3,7 @@ import { IStorage } from "./storage";
 import {
   User,
   InsertUser,
+  UpdateUserProfile,
   Product,
   InsertProduct,
   CartItem,
@@ -70,13 +71,34 @@ export class PrismaStorage implements IStorage {
           username: userData.username,
           email: userData.email,
           password: userData.password,
-          role: userData.role || "user"
+          role: userData.role || "user",
+          fullName: null,
+          phone: null,
+          address: null,
+          city: null,
+          state: null,
+          zipCode: null,
+          country: "United States", 
+          preferredPaymentMethod: "card"
         }
       });
       return this.mapPrismaUserToUser(user);
     } catch (error) {
       console.error("Error in createUser:", error);
       throw error;
+    }
+  }
+  
+  async updateUserProfile(id: number, profileData: Partial<UpdateUserProfile>): Promise<User | undefined> {
+    try {
+      const user = await this.prisma.user.update({
+        where: { id: String(id) },
+        data: profileData
+      });
+      return this.mapPrismaUserToUser(user);
+    } catch (error) {
+      console.error("Error in updateUserProfile:", error);
+      return undefined;
     }
   }
 
