@@ -169,18 +169,30 @@ export class PrismaStorage implements IStorage {
   // Cart operations
   async getCartItems(userId: number): Promise<CartItemWithProduct[]> {
     try {
-      // Convert userId to a string for MongoDB
-      const userIdStr = userId.toString();
+      // MongoDB requires a valid ObjectId format (12 bytes)
+      // For safety, we'll catch issues and return an empty array rather than failing
+      let cartItems: any[] = [];
       
-      // Use a type-safe approach to querying
-      const cartItems = await this.prisma.cartItem.findMany({
-        where: {
-          userId: userIdStr
-        },
-        include: {
-          product: true // This ensures we get the joined product data
-        }
-      });
+      try {
+        // Try to fetch cart items, but handle errors gracefully
+        cartItems = await this.prisma.cartItem.findMany({
+          include: {
+            product: true // This ensures we get the joined product data
+          }
+        });
+        
+        // Filter by userId after retrieval to avoid ObjectId errors
+        cartItems = cartItems.filter(item => {
+          try {
+            return parseInt(item.userId) === userId;
+          } catch (e) {
+            return false;
+          }
+        });
+      } catch (mongoError) {
+        console.error("MongoDB error in getCartItems:", mongoError);
+        // Return empty array, handled below
+      }
       
       // Map cart items to our schema format
       return cartItems.map(item => {
@@ -226,11 +238,29 @@ export class PrismaStorage implements IStorage {
 
   async addCartItem(cartItemData: InsertCartItem): Promise<CartItem> {
     try {
+      // First, try to get the user and product to ensure they exist
+      const user = await this.prisma.user.findUnique({
+        where: { id: await this.getUserObjectId(cartItemData.userId) }
+      });
+      
+      const product = await this.prisma.product.findUnique({
+        where: { id: await this.getProductObjectId(cartItemData.productId) }
+      });
+      
+      if (!user || !product) {
+        console.error("User or product not found when adding to cart");
+        throw new Error("User or product not found");
+      }
+      
+      // Get the validated object IDs
+      const userObjectId = user.id;
+      const productObjectId = product.id;
+      
       // Check if cart item already exists
       const existingCartItem = await this.prisma.cartItem.findFirst({
         where: {
-          userId: String(cartItemData.userId),
-          productId: String(cartItemData.productId)
+          userId: userObjectId,
+          productId: productObjectId
         }
       });
 
@@ -245,8 +275,8 @@ export class PrismaStorage implements IStorage {
         // Create new cart item
         cartItem = await this.prisma.cartItem.create({
           data: {
-            userId: String(cartItemData.userId),
-            productId: String(cartItemData.productId),
+            userId: userObjectId,
+            productId: productObjectId,
             quantity: cartItemData.quantity || 1
           }
         });
@@ -435,6 +465,77 @@ export class PrismaStorage implements IStorage {
     } catch (error) {
       console.error("Error in updateOrderStatus:", error);
       return undefined;
+    }
+  }
+
+  // Helper methods for MongoDB ObjectId handling
+  private async getUserObjectId(userId: number): Promise<string> {
+    try {
+      // First try to find the user by numeric ID
+      const users = await this.prisma.user.findMany();
+      
+      // Find the first user where the numeric part of the ID matches
+      const matchedUser = users.find(user => {
+        try {
+          return parseInt(user.id) === userId;
+        } catch (e) {
+          return false;
+        }
+      });
+      
+      // If found, return the MongoDB ObjectId
+      if (matchedUser) {
+        return matchedUser.id;
+      }
+      
+      // If not found by numeric ID, try the string directly (may be an ObjectID already)
+      const userStr = await this.prisma.user.findUnique({
+        where: { id: userId.toString() }
+      });
+      
+      if (userStr) {
+        return userStr.id;
+      }
+      
+      throw new Error(`User with ID ${userId} not found`);
+    } catch (error) {
+      console.error(`Error finding user ObjectId for: ${userId}`, error);
+      throw error;
+    }
+  }
+  
+  private async getProductObjectId(productId: number): Promise<string> {
+    try {
+      // First try to find the product by numeric ID
+      const products = await this.prisma.product.findMany();
+      
+      // Find the first product where the numeric part of the ID matches
+      const matchedProduct = products.find(product => {
+        try {
+          return parseInt(product.id) === productId;
+        } catch (e) {
+          return false;
+        }
+      });
+      
+      // If found, return the MongoDB ObjectId
+      if (matchedProduct) {
+        return matchedProduct.id;
+      }
+      
+      // If not found by numeric ID, try the string directly (may be an ObjectID already)
+      const productStr = await this.prisma.product.findUnique({
+        where: { id: productId.toString() }
+      });
+      
+      if (productStr) {
+        return productStr.id;
+      }
+      
+      throw new Error(`Product with ID ${productId} not found`);
+    } catch (error) {
+      console.error(`Error finding product ObjectId for: ${productId}`, error);
+      throw error;
     }
   }
 
