@@ -448,21 +448,60 @@ export class PrismaStorage implements IStorage {
 
   async createOrder(orderData: InsertOrder, items: InsertOrderItem[]): Promise<Order> {
     try {
+      console.log("Creating order for user ID:", orderData.userId);
+      
+      // Find the actual MongoDB user document
+      const users = await this.prisma.user.findMany();
+      
+      // Find a user that matches our expected ID
+      const user = users.find(u => {
+        try {
+          return parseInt(u.id) === parseInt(orderData.userId.toString());
+        } catch (e) {
+          return false;
+        }
+      });
+
+      if (!user) {
+        throw new Error(`User with id ${orderData.userId} not found`);
+      }
+
+      console.log("Found MongoDB user with ID:", user.id);
+      
       // Create order
       const order = await this.prisma.order.create({
         data: {
-          userId: String(orderData.userId),
+          userId: user.id, // This is a valid MongoDB ObjectId
           status: orderData.status,
           total: orderData.total,
           shippingAddress: orderData.shippingAddress,
           paymentMethod: orderData.paymentMethod || "credit-card",
           items: {
-            create: items.map(item => ({
-              productId: String(item.productId),
-              quantity: item.quantity,
-              price: item.price
+            create: await Promise.all(items.map(async item => {
+              // Find the product with the matching numeric ID
+              const products = await this.prisma.product.findMany();
+              const product = products.find(p => {
+                try {
+                  return parseInt(p.id) === parseInt(item.productId.toString());
+                } catch (e) {
+                  return false;
+                }
+              });
+              
+              if (!product) {
+                throw new Error(`Product with id ${item.productId} not found`);
+              }
+              
+              return {
+                productId: product.id, // Valid MongoDB ObjectId
+                quantity: item.quantity,
+                price: item.price
+              };
             }))
           }
+        },
+        include: {
+          items: true
         }
       });
 
@@ -472,7 +511,7 @@ export class PrismaStorage implements IStorage {
         status: order.status,
         total: order.total,
         shippingAddress: order.shippingAddress,
-        paymentMethod: order.paymentMethod || "credit-card",
+        paymentMethod: order.paymentMethod,
         createdAt: order.createdAt
       };
     } catch (error) {

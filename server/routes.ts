@@ -373,8 +373,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   router.post("/orders", authenticateToken, async (req: Request, res: Response) => {
     try {
       const userId = (req as any).user.id;
+      console.log("User ID from token:", userId);
       
       const { shippingAddress, paymentMethod, items } = req.body;
+      console.log("Order request body:", { shippingAddress, paymentMethod, items });
       
       if (!items || !Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ message: "Order must have at least one item" });
@@ -382,6 +384,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get cart items to calculate total
       const cartItems = await storage.getCartItems(userId);
+      console.log(`Found ${cartItems.length} items in cart for user ${userId}`);
       
       if (cartItems.length === 0) {
         return res.status(400).json({ message: "Cart is empty" });
@@ -395,24 +398,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create order
       const orderData = insertOrderSchema.parse({
-        userId,
+        userId: userId.toString(), // Convert to string for schema validation
         status: "pending",
         total,
         shippingAddress,
         paymentMethod: paymentMethod || "credit-card"
       });
       
+      console.log("Parsed order data:", orderData);
+      
       // Create order items
       const orderItemsData = cartItems.map(item => 
         insertOrderItemSchema.parse({
-          productId: item.productId,
+          productId: item.productId.toString(), // Convert to string for schema validation
           quantity: item.quantity,
           price: item.product.price,
-          orderId: 0 // Will be set in storage
+          orderId: "0" // Will be set in storage, just a placeholder
         })
       );
       
+      console.log("Creating order with items:", orderItemsData);
+      
       const order = await storage.createOrder(orderData, orderItemsData);
+      console.log("Order created successfully:", order);
       
       // Clear cart
       await storage.clearCart(userId);
