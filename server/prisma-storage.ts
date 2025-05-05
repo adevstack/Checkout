@@ -570,6 +570,14 @@ export class PrismaStorage implements IStorage {
       email: prismaUser.email,
       password: prismaUser.password,
       role: prismaUser.role,
+      fullName: prismaUser.fullName || null,
+      phone: prismaUser.phone || null,
+      address: prismaUser.address || null,
+      city: prismaUser.city || null,
+      state: prismaUser.state || null,
+      zipCode: prismaUser.zipCode || null,
+      country: prismaUser.country || "United States",
+      preferredPaymentMethod: prismaUser.preferredPaymentMethod || "card",
       createdAt: prismaUser.createdAt
     };
   }

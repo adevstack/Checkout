@@ -19,6 +19,7 @@ import Checkout from "@/pages/checkout";
 import OrderSuccess from "@/pages/order-success";
 import Orders from "@/pages/orders";
 import Favorites from "@/pages/favorites";
+import Profile from "@/pages/profile";
 import Dashboard from "@/pages/admin/dashboard";
 import AdminProducts from "@/pages/admin/products";
 import AdminOrders from "@/pages/admin/orders";
@@ -35,6 +36,7 @@ function Router() {
       <Route path="/order-success" component={OrderSuccess} />
       <Route path="/orders" component={Orders} />
       <Route path="/favorites" component={Favorites} />
+      <Route path="/profile" component={Profile} />
       <Route path="/admin/dashboard" component={Dashboard} />
       <Route path="/admin/products" component={AdminProducts} />
       <Route path="/admin/orders" component={AdminOrders} />
