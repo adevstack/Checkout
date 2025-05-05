@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate, Link } from "wouter";
+import { useLocation, Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";
 import { Order, Product, User } from "@shared/schema";
@@ -40,7 +40,7 @@ export default function AdminDashboard() {
     if (!user || !user.isAdmin) {
       setLocation("/");
     }
-  }, [user, navigate]);
+  }, [user, setLocation]);
 
   // Fetch orders
   const { data: orders, isLoading: ordersLoading } = useQuery<Order[]>({
