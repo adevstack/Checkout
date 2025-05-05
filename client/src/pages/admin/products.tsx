@@ -424,8 +424,8 @@ export default function AdminProducts() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredProducts.map((product) => (
-                <TableRow key={product.id}>
+              {filteredProducts.map((product, index) => (
+                <TableRow key={`product-${product.id}-${index}`}>
                   <TableCell className="font-medium">
                     <div className="flex items-center">
                       <div className="h-10 w-10 rounded-md overflow-hidden bg-gray-100 dark:bg-gray-800 mr-3 flex-shrink-0">
