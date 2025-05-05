@@ -29,7 +29,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="bg-white dark:bg-gray-800 shadow-sm sticky top-0 z-40">
+      <header className="bg-background dark:bg-background border-b border-border dark:border-border shadow-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             {/* Logo and main nav */}
@@ -45,20 +45,20 @@ export default function Header() {
               <nav className="hidden sm:ml-6 sm:flex sm:space-x-8" aria-label="Main Navigation">
                 <Link
                   to="/"
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 ${
                     isActive("/")
-                      ? "border-primary text-gray-900 dark:text-white"
-                      : "border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white"
+                      ? "border-primary text-foreground font-semibold"
+                      : "border-transparent text-muted-foreground hover:text-foreground hover:border-primary/30"
                   }`}
                 >
                   Home
                 </Link>
                 <Link
                   to="/products"
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 ${
                     isActive("/products")
-                      ? "border-primary text-gray-900 dark:text-white"
-                      : "border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white"
+                      ? "border-primary text-foreground font-semibold"
+                      : "border-transparent text-muted-foreground hover:text-foreground hover:border-primary/30"
                   }`}
                 >
                   Products
@@ -66,10 +66,10 @@ export default function Header() {
                 {user && !user.isAdmin && (
                   <Link
                     to="/orders"
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 ${
                       isActive("/orders")
-                        ? "border-primary text-gray-900 dark:text-white"
-                        : "border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white"
+                        ? "border-primary text-foreground font-semibold"
+                        : "border-transparent text-muted-foreground hover:text-foreground hover:border-primary/30"
                     }`}
                   >
                     My Orders
@@ -78,10 +78,10 @@ export default function Header() {
                 {user && user.isAdmin && (
                   <Link
                     to="/admin/dashboard"
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 ${
                       isActive("/admin/dashboard")
-                        ? "border-primary text-gray-900 dark:text-white"
-                        : "border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white"
+                        ? "border-primary text-foreground font-semibold"
+                        : "border-transparent text-muted-foreground hover:text-foreground hover:border-primary/30"
                     }`}
                   >
                     Dashboard
@@ -97,7 +97,7 @@ export default function Header() {
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setSearchOpen(true)}
-                className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                className="text-muted-foreground hover:text-foreground hover:bg-muted"
               >
                 <Search className="h-5 w-5" />
                 <span className="sr-only">Search</span>
@@ -111,13 +111,13 @@ export default function Header() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white relative ml-2"
+                  className="text-muted-foreground hover:text-foreground hover:bg-muted relative ml-2"
                 >
-                  <Heart className={`h-5 w-5 ${favorites.length > 0 ? 'text-red-500 fill-red-500' : ''}`} />
+                  <Heart className={`h-5 w-5 ${favorites.length > 0 ? 'text-primary fill-primary/70' : ''}`} />
                   {favorites.length > 0 && (
                     <Badge 
                       variant="secondary" 
-                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary text-primary-foreground"
                     >
                       {favorites.length}
                     </Badge>
@@ -132,13 +132,13 @@ export default function Header() {
                   variant="ghost"
                   size="icon"
                   onClick={() => setCartOpen(true)}
-                  className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white relative"
+                  className="text-muted-foreground hover:text-foreground hover:bg-muted relative"
                 >
                   <ShoppingCart className="h-5 w-5" />
                   {cartItemsCount > 0 && (
                     <Badge 
                       variant="secondary" 
-                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary text-primary-foreground"
                     >
                       {cartItemsCount}
                     </Badge>
@@ -159,7 +159,7 @@ export default function Header() {
                     variant="ghost"
                     size="icon"
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    className="text-muted-foreground hover:text-foreground hover:bg-muted"
                   >
                     <span className="sr-only">Open main menu</span>
                     {mobileMenuOpen ? (

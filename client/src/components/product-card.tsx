@@ -37,11 +37,11 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Card 
-      className="group border-gray-200 dark:border-gray-700 overflow-hidden" 
+      className="group border-gray-200 dark:border-opacity-40 dark:border-border overflow-hidden shadow-card card-product" 
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="w-full aspect-square bg-gray-200 dark:bg-gray-800 relative overflow-hidden">
+      <div className="w-full aspect-square bg-muted dark:bg-muted relative overflow-hidden">
         <img
           src={product.imageUrl}
           alt={product.name}
@@ -55,16 +55,16 @@ export default function ProductCard({ product }: ProductCardProps) {
         />
       </div>
       <CardContent className="p-4">
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2">
+        <h3 className="text-sm font-medium text-foreground mt-2 line-clamp-2 h-10">
           {product.name}
         </h3>
         <div className="mt-1 flex justify-between items-center">
-          <p className="text-lg font-medium text-gray-900 dark:text-white">
+          <p className="text-lg font-semibold text-foreground dark:text-primary">
             ${product.price.toFixed(2)}
           </p>
           <div className="flex items-center">
-            <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-            <span className="ml-1 text-sm text-gray-500 dark:text-gray-400">
+            <Star className="h-4 w-4 text-primary dark:text-primary fill-primary dark:fill-primary" />
+            <span className="ml-1 text-sm text-muted-foreground">
               {product.rating}
             </span>
           </div>
@@ -74,7 +74,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="flex space-x-2 w-full">
           <Button 
             onClick={handleAddToCart} 
-            className="flex-1"
+            className="flex-1 btn-primary"
           >
             Add to Cart
           </Button>
@@ -84,15 +84,15 @@ export default function ProductCard({ product }: ProductCardProps) {
             onClick={toggleFavorite}
             className={`${
               isFavorite(productId) 
-                ? 'bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-800/40' 
-                : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                ? 'bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 border-primary/30' 
+                : 'bg-muted hover:bg-muted/80 dark:bg-accent dark:hover:bg-accent/80'
             }`}
           >
             <Heart 
               className={`h-5 w-5 ${
                 isFavorite(productId) 
-                  ? 'text-red-500 fill-red-500' 
-                  : 'text-gray-600 dark:text-gray-400'
+                  ? 'text-primary fill-primary/70' 
+                  : 'text-muted-foreground dark:text-muted-foreground'
               }`} 
             />
           </Button>
