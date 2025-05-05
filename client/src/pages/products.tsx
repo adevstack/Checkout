@@ -402,8 +402,8 @@ export default function Products() {
             </div>
           ) : filteredProducts.length > 0 ? (
             <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 xl:gap-x-8">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+              {filteredProducts.map((product, index) => (
+                <ProductCard key={`product-${product.id}-${index}`} product={product} />
               ))}
             </div>
           ) : (

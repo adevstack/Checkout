@@ -148,8 +148,8 @@ export default function Home() {
                 </div>
               ))
             ) : (
-              featuredProducts.map(product => (
-                <ProductCard key={product.id} product={product} />
+              featuredProducts.map((product, index) => (
+                <ProductCard key={`featured-${product.id}-${index}`} product={product} />
               ))
             )}
           </div>
