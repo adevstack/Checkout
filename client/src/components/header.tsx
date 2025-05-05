@@ -105,6 +105,26 @@ export default function Header() {
 
               {/* Dark mode toggle */}
               <ThemeToggle />
+              
+              {/* Favorites */}
+              <Link to="/favorites">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white relative ml-2"
+                >
+                  <Heart className={`h-5 w-5 ${favorites.length > 0 ? 'text-red-500 fill-red-500' : ''}`} />
+                  {favorites.length > 0 && (
+                    <Badge 
+                      variant="secondary" 
+                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                    >
+                      {favorites.length}
+                    </Badge>
+                  )}
+                  <span className="sr-only">View favorites</span>
+                </Button>
+              </Link>
 
               {/* Cart */}
               <div className="ml-4 relative">

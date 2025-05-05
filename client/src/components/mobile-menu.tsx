@@ -1,6 +1,7 @@
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme-provider";
-import { Moon, Sun } from "lucide-react";
+import { useFavorites } from "@/hooks/use-favorites";
+import { Moon, Sun, Heart } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 interface MobileMenuProps {
@@ -11,6 +12,7 @@ export default function MobileMenu({ onClose }: MobileMenuProps) {
   const [location] = useLocation();
   const { user, login, logout } = useAuth();
   const { theme, setTheme } = useTheme();
+  const { favorites } = useFavorites();
   
   const isActive = (path: string) => location === path;
   
@@ -84,6 +86,25 @@ export default function MobileMenu({ onClose }: MobileMenuProps) {
             Dashboard
           </Link>
         )}
+        
+        {/* Favorites Link */}
+        <Link
+          to="/favorites"
+          onClick={onClose}
+          className={`flex items-center pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
+            isActive("/favorites")
+              ? "bg-primary-50 dark:bg-gray-700 border-primary text-primary dark:text-white"
+              : "border-transparent text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+          }`}
+        >
+          <Heart className={`h-5 w-5 mr-2 ${favorites.length > 0 ? 'text-red-500 fill-red-500' : ''}`} />
+          Favorites
+          {favorites.length > 0 && (
+            <span className="ml-auto bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              {favorites.length}
+            </span>
+          )}
+        </Link>
       </div>
       <div className="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
         {!user ? (
