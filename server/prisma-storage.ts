@@ -91,10 +91,19 @@ export class PrismaStorage implements IStorage {
   
   async updateUserProfile(id: number, profileData: Partial<UpdateUserProfile>): Promise<User | undefined> {
     try {
+      // Get the MongoDB ObjectId for the user
+      const userObjectId = await this.getUserObjectId(id);
+      
+      if (!userObjectId) {
+        console.error(`No user found with ID ${id}`);
+        return undefined;
+      }
+      
       const user = await this.prisma.user.update({
-        where: { id: String(id) },
+        where: { id: userObjectId },
         data: profileData
       });
+      
       return this.mapPrismaUserToUser(user);
     } catch (error) {
       console.error("Error in updateUserProfile:", error);
