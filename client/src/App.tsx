@@ -20,6 +20,7 @@ import Orders from "@/pages/orders";
 import Dashboard from "@/pages/admin/dashboard";
 import AdminProducts from "@/pages/admin/products";
 import AdminOrders from "@/pages/admin/orders";
+import AdminReports from "@/pages/admin/reports";
 
 function Router() {
   return (
@@ -34,6 +35,7 @@ function Router() {
       <Route path="/admin/dashboard" component={Dashboard} />
       <Route path="/admin/products" component={AdminProducts} />
       <Route path="/admin/orders" component={AdminOrders} />
+      <Route path="/admin/reports" component={AdminReports} />
       <Route component={NotFound} />
     </Switch>
   );
