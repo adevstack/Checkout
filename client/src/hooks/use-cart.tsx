@@ -9,8 +9,8 @@ interface CartContextType {
   cartItems: CartItemWithProduct[];
   cartTotal: number;
   addToCart: (product: Product, quantity?: number) => void;
-  updateCartItem: (id: number, quantity: number) => void;
-  removeCartItem: (id: number) => void;
+  updateCartItem: (id: number | string, quantity: number) => void;
+  removeCartItem: (id: number | string) => void;
   clearCart: () => void;
 }
 
@@ -137,12 +137,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   // Update cart item quantity
-  const updateCartItem = async (id: number, quantity: number) => {
+  const updateCartItem = async (id: number | string, quantity: number) => {
     if (user) {
       try {
+        console.log(`Updating cart item ${id} to quantity ${quantity}`);
         await apiRequest("PUT", `/api/cart/${id}`, { quantity });
         fetchCart();
       } catch (error) {
+        console.error("Error updating cart item:", error);
         toast({
           title: "Error",
           description: "Failed to update item quantity",
@@ -164,12 +166,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   // Remove item from cart
-  const removeCartItem = async (id: number) => {
+  const removeCartItem = async (id: number | string) => {
     if (user) {
       try {
+        console.log(`Removing cart item with ID: ${id}`);
         await apiRequest("DELETE", `/api/cart/${id}`, undefined);
         fetchCart();
       } catch (error) {
+        console.error("Error removing cart item:", error);
         toast({
           title: "Error",
           description: "Failed to remove item from cart",

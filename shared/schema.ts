@@ -140,7 +140,9 @@ export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 
-export type CartItem = typeof cartItems.$inferSelect;
+export type CartItem = (typeof cartItems.$inferSelect) & {
+  id: number | string;
+};
 export type InsertCartItem = z.infer<typeof insertCartItemSchema>;
 
 export type Order = typeof orders.$inferSelect;
