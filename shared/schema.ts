@@ -20,23 +20,25 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  email: true,
-  password: true,
-  role: true,
-});
+export const insertUserSchema = createInsertSchema(users)
+  .pick({
+    username: true,
+    email: true,
+    password: true,
+    role: true,
+  });
 
-export const updateUserProfileSchema = createInsertSchema(users).pick({
-  fullName: true,
-  phone: true,
-  address: true,
-  city: true,
-  state: true,
-  zipCode: true,
-  country: true,
-  preferredPaymentMethod: true,
-});
+export const updateUserProfileSchema = createInsertSchema(users)
+  .pick({
+    fullName: true,
+    phone: true,
+    address: true,
+    city: true,
+    state: true,
+    zipCode: true,
+    country: true,
+    preferredPaymentMethod: true,
+  });
 
 // Product schema
 export const products = pgTable("products", {
@@ -51,15 +53,16 @@ export const products = pgTable("products", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const insertProductSchema = createInsertSchema(products).pick({
-  name: true,
-  description: true,
-  price: true,
-  imageUrl: true,
-  category: true,
-  rating: true,
-  stock: true,
-});
+export const insertProductSchema = createInsertSchema(products)
+  .pick({
+    name: true,
+    description: true,
+    price: true,
+    imageUrl: true,
+    category: true,
+    rating: true,
+    stock: true,
+  });
 
 // Cart schema
 export const cartItems = pgTable("cart_items", {
@@ -77,7 +80,8 @@ export const insertCartItemSchema = createInsertSchema(cartItems)
     quantity: true,
   })
   .extend({
-    productId: z.number().int().positive(),
+    productId: z.union([z.number().int().positive(), z.string()]),
+    userId: z.union([z.number().int().positive(), z.string()]),
     quantity: z.number().int().positive().default(1),
   });
 
@@ -92,13 +96,18 @@ export const orders = pgTable("orders", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const insertOrderSchema = createInsertSchema(orders).pick({
-  userId: true,
-  status: true,
-  total: true,
-  shippingAddress: true,
-  paymentMethod: true,
-});
+export const insertOrderSchema = createInsertSchema(orders)
+  .pick({
+    userId: true,
+    status: true,
+    total: true,
+    shippingAddress: true,
+    paymentMethod: true,
+  })
+  .extend({
+    // Allow string IDs to support MongoDB ObjectIds
+    userId: z.union([z.number(), z.string()]),
+  });
 
 // Order items schema
 export const orderItems = pgTable("order_items", {
@@ -110,12 +119,18 @@ export const orderItems = pgTable("order_items", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const insertOrderItemSchema = createInsertSchema(orderItems).pick({
-  orderId: true,
-  productId: true,
-  quantity: true,
-  price: true,
-});
+export const insertOrderItemSchema = createInsertSchema(orderItems)
+  .pick({
+    orderId: true,
+    productId: true,
+    quantity: true,
+    price: true,
+  })
+  .extend({
+    // Allow string IDs to support MongoDB ObjectIds
+    productId: z.union([z.number(), z.string()]),
+    orderId: z.union([z.number(), z.string()]),
+  });
 
 // Export types
 export type User = typeof users.$inferSelect;

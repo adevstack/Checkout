@@ -106,27 +106,41 @@ export default function Checkout() {
         data.apartment ? `, ${data.apartment}` : ""
       }, ${data.city}, ${data.postalCode}`;
 
-      // Send order to API
-      await apiRequest("POST", "/api/orders", {
+      // Calculate the total price
+      const total = orderTotal;
+
+      console.log("Sending order with items:", cartItems);
+
+      // Send order to API with string IDs to handle MongoDB large values
+      const response = await apiRequest("POST", "/api/orders", {
+        userId: user.id.toString(), // Convert to string for MongoDB compatibility
         shippingAddress,
         paymentMethod: data.paymentMethod,
+        total,
+        status: "pending",
         items: cartItems.map((item) => ({
-          productId: item.productId,
+          productId: item.productId.toString(), // Convert to string for MongoDB compatibility
           quantity: item.quantity,
           price: item.product.price,
         })),
       });
+
+      console.log("Order placed successfully:", await response.json());
 
       // Clear cart after successful order
       clearCart();
 
       // Navigate to success page
       setLocation("/order-success");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Order submission error:", error);
+      
+      // Show a more specific error message if available
+      const errorMessage = error.message || "There was an error processing your order. Please try again.";
+      
       toast({
         title: "Checkout failed",
-        description: "There was an error processing your order. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
