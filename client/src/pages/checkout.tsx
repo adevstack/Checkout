@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -33,7 +33,7 @@ const checkoutSchema = z.object({
   city: z.string().min(2, { message: "City is required" }),
   postalCode: z.string().min(3, { message: "Postal code is required" }),
   phone: z.string().min(10, { message: "Phone number is required" }),
-  paymentMethod: z.enum(["credit-card", "paypal"], {
+  paymentMethod: z.enum(["credit-card", "paypal", "cod"], {
     required_error: "Please select a payment method",
   }),
   cardNumber: z.string().optional(),
@@ -55,19 +55,21 @@ export default function Checkout() {
   const tax = cartTotal * 0.07;
   const orderTotal = cartTotal + shipping + tax;
 
-  // Initialize form with default values
+  // Initialize form with values from user profile
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
     defaultValues: {
       email: user?.email || "",
-      firstName: "",
-      lastName: "",
-      address: "",
+      // Use user's full name for first and last name if available
+      firstName: user?.fullName ? user.fullName.split(' ')[0] : "",
+      lastName: user?.fullName ? user.fullName.split(' ').slice(1).join(' ') : "",
+      address: user?.address || "",
       apartment: "",
-      city: "",
-      postalCode: "",
-      phone: "",
-      paymentMethod: "credit-card",
+      city: user?.city || "",
+      postalCode: user?.zipCode || "",
+      phone: user?.phone || "",
+      // Use user's preferred payment method if available
+      paymentMethod: (user?.preferredPaymentMethod as "credit-card" | "paypal" | "cod") || "credit-card",
       cardNumber: "",
       expirationDate: "",
       cvc: "",
@@ -334,6 +336,17 @@ export default function Checkout() {
                                 <svg className="h-6 w-6 ml-4 text-blue-600" viewBox="0 0 24 24" fill="currentColor">
                                   <path d="M7 13l1.5-5h6.5c.8 0 1.5.7 1.5 1.5s-.7 1.5-1.5 1.5h-5l-.5 2h-2.5z" />
                                   <path d="M12 16l1-4h3.5c.8 0 1.5-.7 1.5-1.5S17.3 9 16.5 9H10L8.5 14h-3L4 6h5.5C11.4 6 13 7.6 13 9.5c0 .7-.2 1.4-.6 2 1.2.6 2 1.8 2 3.2 0 .7-.2 1.3-.5 1.8l-.4 1.5h-1.5z" />
+                                </svg>
+                              </FormLabel>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <RadioGroupItem value="cod" id="cod" />
+                              <FormLabel htmlFor="cod" className="flex items-center">
+                                <span className="font-medium text-gray-700 dark:text-gray-300">Cash on Delivery</span>
+                                <svg className="h-6 w-6 ml-4 text-green-600" viewBox="0 0 24 24" fill="currentColor">
+                                  <path d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2H4z" />
+                                  <path d="M12 7a3 3 0 100 6 3 3 0 000-6z" fill="white" />
+                                  <path d="M17.5 13a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM6.5 13a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" fill="white" />
                                 </svg>
                               </FormLabel>
                             </div>
