@@ -135,6 +135,23 @@ export default function Checkout() {
 
   // Watch payment method to conditionally show credit card form
   const watchPaymentMethod = form.watch("paymentMethod");
+  
+  // Add effect to update form when user profile data changes
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        ...form.getValues(),
+        email: user.email || "",
+        firstName: user.fullName ? user.fullName.split(' ')[0] : "",
+        lastName: user.fullName ? user.fullName.split(' ').slice(1).join(' ') : "",
+        address: user.address || "",
+        city: user.city || "",
+        postalCode: user.zipCode || "",
+        phone: user.phone || "",
+        paymentMethod: (user.preferredPaymentMethod as "credit-card" | "paypal" | "cod") || "credit-card",
+      });
+    }
+  }, [user, form]);
 
   if (cartItems.length === 0) {
     return (
