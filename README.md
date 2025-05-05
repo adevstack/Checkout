@@ -77,4 +77,4 @@ The following environment variables are required:
 
 ## License
 
-MIT
+NoLicense
