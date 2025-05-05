@@ -81,9 +81,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     // For logged in users, send to server
     if (user) {
       try {
-        console.log('Adding to cart:', product.id, quantity);
+        // Convert the product.id string to a number if needed
+        const productId = typeof product.id === 'string' ? 
+          parseInt(product.id.toString()) : product.id;
+            
+        console.log('Adding to cart:', productId, quantity);
         await apiRequest("POST", "/api/cart", {
-          productId: product.id,
+          productId: productId,
           quantity: quantity,
         });
         

@@ -224,15 +224,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   router.post("/cart", authenticateToken, async (req: Request, res: Response) => {
     try {
       const userId = (req as any).user.id;
+      console.log("Adding to cart - userId:", userId, "request body:", req.body);
+      
+      // Convert productId to number if it's a string
+      const productId = typeof req.body.productId === 'string' ? 
+        parseInt(req.body.productId) : req.body.productId;
+      
+      const quantity = typeof req.body.quantity === 'string' ? 
+        parseInt(req.body.quantity) : req.body.quantity;
+      
       const cartItemData = insertCartItemSchema.parse({ 
-        ...req.body, 
+        productId,
+        quantity,
         userId 
       });
       
+      console.log("Parsed cart item data:", cartItemData);
       const cartItem = await storage.addCartItem(cartItemData);
       
       res.status(201).json(cartItem);
     } catch (error: any) {
+      console.error("Cart addition error:", error);
       res.status(400).json({ message: error.message });
     }
   });

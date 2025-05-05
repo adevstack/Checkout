@@ -51,11 +51,16 @@ export const cartItems = pgTable("cart_items", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const insertCartItemSchema = createInsertSchema(cartItems).pick({
-  userId: true,
-  productId: true,
-  quantity: true,
-});
+export const insertCartItemSchema = createInsertSchema(cartItems)
+  .pick({
+    userId: true,
+    productId: true,
+    quantity: true,
+  })
+  .extend({
+    productId: z.number().int().positive(),
+    quantity: z.number().int().positive().default(1),
+  });
 
 // Order schema
 export const orders = pgTable("orders", {
