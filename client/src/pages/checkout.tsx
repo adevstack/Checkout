@@ -109,6 +109,7 @@ export default function Checkout() {
       // Send order to API
       await apiRequest("POST", "/api/orders", {
         shippingAddress,
+        paymentMethod: data.paymentMethod,
         items: cartItems.map((item) => ({
           productId: item.productId,
           quantity: item.quantity,
