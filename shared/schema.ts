@@ -9,6 +9,14 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
   role: text("role").notNull().default("user"),
+  fullName: text("full_name"),
+  phone: text("phone"),
+  address: text("address"),
+  city: text("city"),
+  state: text("state"),
+  zipCode: text("zip_code"),
+  country: text("country").default("United States"),
+  preferredPaymentMethod: text("preferred_payment_method").default("card"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -17,6 +25,17 @@ export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   password: true,
   role: true,
+});
+
+export const updateUserProfileSchema = createInsertSchema(users).pick({
+  fullName: true,
+  phone: true,
+  address: true,
+  city: true,
+  state: true,
+  zipCode: true,
+  country: true,
+  preferredPaymentMethod: true,
 });
 
 // Product schema
@@ -99,6 +118,7 @@ export const insertOrderItemSchema = createInsertSchema(orderItems).pick({
 // Export types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
