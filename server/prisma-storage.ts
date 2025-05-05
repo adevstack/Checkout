@@ -327,15 +327,27 @@ export class PrismaStorage implements IStorage {
     }
   }
 
-  async updateCartItem(id: number, quantity: number): Promise<CartItem | undefined> {
+  async updateCartItem(id: number | string, quantity: number): Promise<CartItem | undefined> {
     try {
+      // First, try to find the cart item by ID to make sure it exists
+      const existingItem = await this.prisma.cartItem.findUnique({
+        where: { id: String(id) }
+      });
+      
+      if (!existingItem) {
+        console.log(`Cart item with ID ${id} not found for update.`);
+        return undefined;
+      }
+      
       const cartItem = await this.prisma.cartItem.update({
         where: { id: String(id) },
         data: { quantity }
       });
 
+      console.log(`Successfully updated cart item ${id} quantity to ${quantity}`);
+      
       return {
-        id: parseInt(cartItem.id),
+        id: cartItem.id, // Keep as string for MongoDB ID compatibility
         userId: parseInt(cartItem.userId),
         productId: parseInt(cartItem.productId),
         quantity: cartItem.quantity,
@@ -347,11 +359,24 @@ export class PrismaStorage implements IStorage {
     }
   }
 
-  async removeCartItem(id: number): Promise<boolean> {
+  async removeCartItem(id: number | string): Promise<boolean> {
     try {
+      // First, try to find the cart item by ID to make sure it exists
+      const cartItem = await this.prisma.cartItem.findUnique({
+        where: { id: String(id) }
+      });
+      
+      if (!cartItem) {
+        console.log(`Cart item with ID ${id} not found.`);
+        return false;
+      }
+      
+      // Then delete the item
       await this.prisma.cartItem.delete({
         where: { id: String(id) }
       });
+      
+      console.log(`Successfully removed cart item with ID ${id}`);
       return true;
     } catch (error) {
       console.error("Error in removeCartItem:", error);

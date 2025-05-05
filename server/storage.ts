@@ -27,8 +27,8 @@ export interface IStorage {
   // Cart operations
   getCartItems(userId: number): Promise<CartItemWithProduct[]>;
   addCartItem(cartItem: InsertCartItem): Promise<CartItem>;
-  updateCartItem(id: number, quantity: number): Promise<CartItem | undefined>;
-  removeCartItem(id: number): Promise<boolean>;
+  updateCartItem(id: number | string, quantity: number): Promise<CartItem | undefined>;
+  removeCartItem(id: number | string): Promise<boolean>;
   clearCart(userId: number): Promise<boolean>;
   
   // Order operations
@@ -270,17 +270,19 @@ export class MemStorage implements IStorage {
     return newCartItem;
   }
 
-  async updateCartItem(id: number, quantity: number): Promise<CartItem | undefined> {
-    const cartItem = this.cartItems.get(id);
+  async updateCartItem(id: number | string, quantity: number): Promise<CartItem | undefined> {
+    const numericId = typeof id === 'string' ? parseInt(id) : id;
+    const cartItem = this.cartItems.get(numericId);
     if (!cartItem) return undefined;
     
     const updatedCartItem = { ...cartItem, quantity };
-    this.cartItems.set(id, updatedCartItem);
+    this.cartItems.set(numericId, updatedCartItem);
     return updatedCartItem;
   }
 
-  async removeCartItem(id: number): Promise<boolean> {
-    return this.cartItems.delete(id);
+  async removeCartItem(id: number | string): Promise<boolean> {
+    const numericId = typeof id === 'string' ? parseInt(id) : id;
+    return this.cartItems.delete(numericId);
   }
 
   async clearCart(userId: number): Promise<boolean> {
