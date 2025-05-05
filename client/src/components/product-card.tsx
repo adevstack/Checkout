@@ -3,6 +3,7 @@ import { Star, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useCart } from "@/hooks/use-cart";
+import { useFavorites } from "@/hooks/use-favorites";
 import { Product } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,8 +13,10 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
+  const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites();
   const { toast } = useToast();
   const [isHovered, setIsHovered] = useState(false);
+  const productId = Number(product.id);
 
   const handleAddToCart = () => {
     addToCart(product);
@@ -21,6 +24,15 @@ export default function ProductCard({ product }: ProductCardProps) {
       title: "Added to cart",
       description: `${product.name} has been added to your cart.`,
     });
+  };
+
+  // Toggle favorite
+  const toggleFavorite = () => {
+    if (isFavorite(productId)) {
+      removeFromFavorites(productId);
+    } else {
+      addToFavorites(product);
+    }
   };
 
   return (
@@ -65,9 +77,20 @@ export default function ProductCard({ product }: ProductCardProps) {
           <Button 
             variant="outline" 
             size="icon" 
-            className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
+            onClick={toggleFavorite}
+            className={`${
+              isFavorite(productId) 
+                ? 'bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-800/40' 
+                : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+            }`}
           >
-            <Heart className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+            <Heart 
+              className={`h-5 w-5 ${
+                isFavorite(productId) 
+                  ? 'text-red-500 fill-red-500' 
+                  : 'text-gray-600 dark:text-gray-400'
+              }`} 
+            />
           </Button>
         </div>
       </CardFooter>

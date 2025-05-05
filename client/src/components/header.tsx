@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { ShoppingCart, Search } from "lucide-react";
+import { ShoppingCart, Search, Heart } from "lucide-react";
 import { ThemeToggle } from "./ui/theme-toggle";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { useCart } from "@/hooks/use-cart";
+import { useFavorites } from "@/hooks/use-favorites";
 import { useMobile } from "@/hooks/use-mobile";
 import CartSidebar from "./cart";
 import SearchDialog from "./search-dialog";
@@ -16,6 +17,7 @@ export default function Header() {
   const [location] = useLocation();
   const { user } = useAuth();
   const { cartItems } = useCart();
+  const { favorites } = useFavorites();
   const isMobile = useMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
