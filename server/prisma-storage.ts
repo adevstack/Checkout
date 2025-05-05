@@ -137,9 +137,15 @@ export class PrismaStorage implements IStorage {
 
   async updateProduct(id: number, productData: Partial<InsertProduct>): Promise<Product | undefined> {
     try {
+      // Handle null rating as 0 to avoid Prisma type error
+      const data = {
+        ...productData,
+        rating: productData.rating === null ? 0 : productData.rating
+      };
+      
       const product = await this.prisma.product.update({
         where: { id: String(id) },
-        data: productData
+        data
       });
       return this.mapPrismaProductToProduct(product);
     } catch (error) {
@@ -422,6 +428,21 @@ export class PrismaStorage implements IStorage {
     };
   }
 
+  // Reset the products in the database
+  async resetProducts(): Promise<void> {
+    try {
+      console.log("Resetting products in the database...");
+      
+      // Delete all existing products
+      await this.prisma.product.deleteMany({});
+      
+      console.log("All products have been deleted. Ready for new seed data.");
+      return;
+    } catch (error) {
+      console.error("Error resetting products:", error);
+    }
+  }
+
   // Seed initial data if needed
   async seedData(): Promise<void> {
     try {
@@ -459,15 +480,23 @@ export class PrismaStorage implements IStorage {
         console.log("Demo users created successfully");
       }
 
-      // Check for existing products
+      // Check for existing products - we'll replace all products with our updated set
       const productCount = await this.prisma.product.count();
       console.log(`Found ${productCount} existing products`);
+      
+      // Reset products if there are only a few (likely the initial seed)
+      if (productCount > 0 && productCount < 10) {
+        await this.resetProducts();
+        // Set productCount to 0 to ensure we add the new products
+        console.log("Previous seed products have been reset");
+      }
       
       if (productCount === 0) {
         console.log("Creating demo products...");
         
         // Create products one by one
         const demoProducts = [
+          // Electronics
           {
             name: "Wireless Headphones",
             description: "Premium wireless headphones with noise cancellation",
@@ -487,6 +516,44 @@ export class PrismaStorage implements IStorage {
             stock: 25
           },
           {
+            name: "Fitness Tracker",
+            description: "Track your daily activity, sleep, and workout metrics",
+            price: 59.99,
+            imageUrl: "https://images.unsplash.com/photo-1576243345690-4e4b79b63eaa?auto=format&fit=crop&w=700",
+            category: "Electronics",
+            rating: 4.3,
+            stock: 75
+          },
+          {
+            name: "Wireless Earbuds",
+            description: "True wireless earbuds with charging case and water resistance",
+            price: 129.99,
+            imageUrl: "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?auto=format&fit=crop&w=700",
+            category: "Electronics",
+            rating: 4.6,
+            stock: 40
+          },
+          {
+            name: "Smart Watch",
+            description: "Feature-packed smartwatch with health monitoring",
+            price: 249.99,
+            imageUrl: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=700",
+            category: "Electronics",
+            rating: 4.7,
+            stock: 35
+          },
+          {
+            name: "Bluetooth Speaker",
+            description: "Powerful portable speaker with 360° sound",
+            price: 79.99,
+            imageUrl: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=700",
+            category: "Electronics",
+            rating: 4.2,
+            stock: 60
+          },
+          
+          // Fashion
+          {
             name: "Running Shoes",
             description: "Lightweight and comfortable running shoes for all terrains",
             price: 89.99,
@@ -495,6 +562,44 @@ export class PrismaStorage implements IStorage {
             rating: 4.2,
             stock: 100
           },
+          {
+            name: "Leather Wallet",
+            description: "Genuine leather wallet with RFID protection",
+            price: 39.99,
+            imageUrl: "https://images.unsplash.com/photo-1559563458-527698bf5295?auto=format&fit=crop&w=700",
+            category: "Fashion",
+            rating: 4.5,
+            stock: 120
+          },
+          {
+            name: "Denim Jacket",
+            description: "Classic denim jacket with modern styling",
+            price: 59.99,
+            imageUrl: "https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=700",
+            category: "Fashion",
+            rating: 4.3,
+            stock: 80
+          },
+          {
+            name: "Summer Dress",
+            description: "Lightweight floral summer dress",
+            price: 45.99,
+            imageUrl: "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&w=700",
+            category: "Fashion",
+            rating: 4.6,
+            stock: 65
+          },
+          {
+            name: "Aviator Sunglasses",
+            description: "Classic aviator sunglasses with UV protection",
+            price: 29.99,
+            imageUrl: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=700",
+            category: "Fashion",
+            rating: 4.1,
+            stock: 150
+          },
+          
+          // Home
           {
             name: "Coffee Maker",
             description: "Automatic coffee maker with programmable settings",
@@ -505,13 +610,176 @@ export class PrismaStorage implements IStorage {
             stock: 30
           },
           {
-            name: "Fitness Tracker",
-            description: "Track your daily activity, sleep, and workout metrics",
-            price: 59.99,
-            imageUrl: "https://images.unsplash.com/photo-1576243345690-4e4b79b63eaa?auto=format&fit=crop&w=700",
-            category: "Electronics",
+            name: "Desk Lamp",
+            description: "Adjustable desk lamp with multiple brightness settings",
+            price: 34.99,
+            imageUrl: "https://images.unsplash.com/photo-1534965187696-11eb55982a8a?auto=format&fit=crop&w=700",
+            category: "Home",
+            rating: 4.4,
+            stock: 55
+          },
+          {
+            name: "Throw Blanket",
+            description: "Super soft throw blanket perfect for cozy evenings",
+            price: 24.99,
+            imageUrl: "https://images.unsplash.com/photo-1538874165723-9f2a2b63f2c8?auto=format&fit=crop&w=700",
+            category: "Home",
+            rating: 4.7,
+            stock: 85
+          },
+          {
+            name: "Ceramic Vase",
+            description: "Handcrafted ceramic vase for fresh or dried flowers",
+            price: 19.99,
+            imageUrl: "https://images.unsplash.com/photo-1612032835625-3b0cb313de17?auto=format&fit=crop&w=700",
+            category: "Home",
+            rating: 4.2,
+            stock: 40
+          },
+          
+          // Books
+          {
+            name: "The Art of Programming",
+            description: "Comprehensive guide to modern programming techniques",
+            price: 39.99,
+            imageUrl: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=700",
+            category: "Books",
+            rating: 4.8,
+            stock: 25
+          },
+          {
+            name: "Cooking Masterclass",
+            description: "Step-by-step recipes from world-renowned chefs",
+            price: 29.99,
+            imageUrl: "https://images.unsplash.com/photo-1589998059171-988d887df646?auto=format&fit=crop&w=700",
+            category: "Books",
+            rating: 4.5,
+            stock: 30
+          },
+          {
+            name: "World History Encyclopedia",
+            description: "Illustrated guide through world history from ancient times",
+            price: 49.99,
+            imageUrl: "https://images.unsplash.com/photo-1533327325824-76bc4e62d560?auto=format&fit=crop&w=700",
+            category: "Books",
+            rating: 4.7,
+            stock: 20
+          },
+          
+          // Sports
+          {
+            name: "Yoga Mat",
+            description: "Non-slip yoga mat with carrying strap",
+            price: 24.99,
+            imageUrl: "https://images.unsplash.com/photo-1592432678016-e910b452f9a2?auto=format&fit=crop&w=700",
+            category: "Sports",
+            rating: 4.4,
+            stock: 70
+          },
+          {
+            name: "Basketball",
+            description: "Official size indoor/outdoor basketball",
+            price: 29.99,
+            imageUrl: "https://images.unsplash.com/photo-1505666287802-931dc83d1b52?auto=format&fit=crop&w=700",
+            category: "Sports",
             rating: 4.3,
-            stock: 75
+            stock: 45
+          },
+          {
+            name: "Tennis Racket",
+            description: "Professional tennis racket for all skill levels",
+            price: 89.99,
+            imageUrl: "https://images.unsplash.com/photo-1617714651693-a4e3f91599ef?auto=format&fit=crop&w=700",
+            category: "Sports",
+            rating: 4.6,
+            stock: 35
+          },
+          
+          // Beauty
+          {
+            name: "Face Serum",
+            description: "Hydrating face serum with vitamin C",
+            price: 24.99,
+            imageUrl: "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&w=700",
+            category: "Beauty",
+            rating: 4.7,
+            stock: 60
+          },
+          {
+            name: "Makeup Brush Set",
+            description: "Professional 12-piece makeup brush set",
+            price: 19.99,
+            imageUrl: "https://images.unsplash.com/photo-1631214524113-16a39c4f9dd0?auto=format&fit=crop&w=700",
+            category: "Beauty",
+            rating: 4.5,
+            stock: 80
+          },
+          {
+            name: "Perfume",
+            description: "Elegant fragrance for everyday use",
+            price: 69.99,
+            imageUrl: "https://images.unsplash.com/photo-1557170334-a9632e77c6e4?auto=format&fit=crop&w=700",
+            category: "Beauty",
+            rating: 4.8,
+            stock: 40
+          },
+          
+          // Toys
+          {
+            name: "Building Blocks Set",
+            description: "Creative building blocks for ages 3+",
+            price: 24.99,
+            imageUrl: "https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&w=700",
+            category: "Toys",
+            rating: 4.5,
+            stock: 50
+          },
+          {
+            name: "Remote Control Car",
+            description: "Fast RC car with long battery life",
+            price: 39.99,
+            imageUrl: "https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?auto=format&fit=crop&w=700",
+            category: "Toys",
+            rating: 4.3,
+            stock: 35
+          },
+          {
+            name: "Stuffed Animal",
+            description: "Soft plush teddy bear, perfect for all ages",
+            price: 19.99,
+            imageUrl: "https://images.unsplash.com/photo-1558877385-81a1c7e67d72?auto=format&fit=crop&w=700",
+            category: "Toys",
+            rating: 4.7,
+            stock: 65
+          },
+          
+          // Furniture
+          {
+            name: "Office Chair",
+            description: "Ergonomic office chair with lumbar support",
+            price: 149.99,
+            imageUrl: "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?auto=format&fit=crop&w=700",
+            category: "Furniture",
+            rating: 4.6,
+            stock: 25
+          },
+          {
+            name: "Coffee Table",
+            description: "Modern coffee table with storage compartment",
+            price: 129.99,
+            imageUrl: "https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?auto=format&fit=crop&w=700",
+            category: "Furniture",
+            rating: 4.5,
+            stock: 15
+          },
+          {
+            name: "Bookshelf",
+            description: "5-tier bookshelf, perfect for home library",
+            price: 89.99,
+            imageUrl: "https://images.unsplash.com/photo-1594620302200-9a762244a156?auto=format&fit=crop&w=700",
+            category: "Furniture",
+            rating: 4.4,
+            stock: 20
           }
         ];
         

@@ -2,6 +2,7 @@ import express, { Response, Request, NextFunction } from "express";
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./db";
+import { PrismaStorage } from "./prisma-storage";
 import { 
   insertUserSchema, 
   insertProductSchema, 
@@ -407,6 +408,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(order);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
+    }
+  });
+  
+  // Route to reset and reseed product data (admin only)
+  router.post("/admin/reset-products", authenticateToken, isAdmin, async (req: Request, res: Response) => {
+    try {
+      if (storage instanceof PrismaStorage) {
+        await (storage as PrismaStorage).resetProducts();
+        await (storage as PrismaStorage).seedData();
+        res.json({ message: "Products have been reset and reseeded successfully" });
+      } else {
+        res.status(400).json({ error: "This operation is only supported with PrismaStorage" });
+      }
+    } catch (error: any) {
+      console.error("Error in reset-products:", error);
+      res.status(500).json({ error: "Failed to reset products" });
     }
   });
 
