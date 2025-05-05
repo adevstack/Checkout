@@ -36,8 +36,8 @@ export default function Header() {
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
                 <Link to="/" className="font-bold text-xl">
-                  <span className="text-primary">Shop</span>
-                  <span className="text-secondary">Ease</span>
+                  <span className="text-primary">Check</span>
+                  <span className="text-secondary">Out</span>
                 </Link>
               </div>
               

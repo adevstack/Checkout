@@ -75,7 +75,7 @@ export default function Footer() {
           </a>
         </div>
         <p className="mt-8 text-center text-base text-gray-400">
-          &copy; 2023 ShopEase, Inc. All rights reserved.
+          &copy; {new Date().getFullYear()} CheckOut, Inc. All rights reserved.
         </p>
       </div>
     </footer>
