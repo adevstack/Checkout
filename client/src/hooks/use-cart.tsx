@@ -81,6 +81,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     // For logged in users, send to server
     if (user) {
       try {
+        console.log('Adding to cart:', product.id, quantity);
         await apiRequest("POST", "/api/cart", {
           productId: product.id,
           quantity: quantity,
@@ -90,9 +91,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
         queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
         fetchCart();
       } catch (error) {
+        console.error('Add to cart error:', error);
         toast({
           title: "Error",
-          description: "Failed to add item to cart",
+          description: `Failed to add item to cart: ${error instanceof Error ? error.message : 'Unknown error'}`,
           variant: "destructive",
         });
       }
