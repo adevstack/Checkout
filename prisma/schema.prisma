@@ -11,12 +11,20 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  username  String   @unique
-  email     String   @unique
-  password  String
-  role      String   @default("user")
-  createdAt DateTime @default(now())
+  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
+  username             String   @unique
+  email                String   @unique
+  password             String
+  role                 String   @default("user")
+  fullName             String?
+  phone                String?
+  address              String?
+  city                 String?
+  state                String?
+  zipCode              String?
+  country              String?  @default("United States")
+  preferredPaymentMethod String? @default("card")
+  createdAt            DateTime @default(now())
   
   // Relations
   cartItems CartItem[]
