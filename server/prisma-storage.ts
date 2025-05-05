@@ -361,9 +361,31 @@ export class PrismaStorage implements IStorage {
 
   async clearCart(userId: number): Promise<boolean> {
     try {
-      await this.prisma.cartItem.deleteMany({
-        where: { userId: String(userId) }
+      console.log("Clearing cart for user ID:", userId);
+      
+      // Find the actual MongoDB user document with the matching ID
+      const users = await this.prisma.user.findMany();
+      const user = users.find(u => {
+        try {
+          return parseInt(u.id) === parseInt(userId.toString());
+        } catch (e) {
+          return false;
+        }
       });
+
+      if (!user) {
+        console.error(`User with ID ${userId} not found for cart clearing`);
+        return false;
+      }
+
+      console.log("Found MongoDB user with ID:", user.id);
+      
+      // Delete cart items using the valid MongoDB ObjectId
+      await this.prisma.cartItem.deleteMany({
+        where: { userId: user.id }
+      });
+      
+      console.log("Cart cleared successfully");
       return true;
     } catch (error) {
       console.error("Error in clearCart:", error);
@@ -374,8 +396,23 @@ export class PrismaStorage implements IStorage {
   // Order operations
   async getOrders(userId: number): Promise<Order[]> {
     try {
+      // Find the actual MongoDB user document
+      const users = await this.prisma.user.findMany();
+      const user = users.find(u => {
+        try {
+          return parseInt(u.id) === parseInt(userId.toString());
+        } catch (e) {
+          return false;
+        }
+      });
+      
+      if (!user) {
+        console.error(`User with ID ${userId} not found for getOrders`);
+        return [];
+      }
+      
       const orders = await this.prisma.order.findMany({
-        where: { userId: String(userId) }
+        where: { userId: user.id }
       });
       
       return orders.map(order => ({
@@ -384,6 +421,7 @@ export class PrismaStorage implements IStorage {
         status: order.status,
         total: order.total,
         shippingAddress: order.shippingAddress,
+        paymentMethod: order.paymentMethod || "credit-card",
         createdAt: order.createdAt
       }));
     } catch (error) {
@@ -402,6 +440,7 @@ export class PrismaStorage implements IStorage {
         status: order.status,
         total: order.total,
         shippingAddress: order.shippingAddress,
+        paymentMethod: order.paymentMethod || "credit-card",
         createdAt: order.createdAt
       }));
     } catch (error) {
@@ -412,15 +451,28 @@ export class PrismaStorage implements IStorage {
 
   async getOrder(id: number): Promise<OrderWithItems | undefined> {
     try {
-      const order = await this.prisma.order.findUnique({
-        where: { id: String(id) },
+      console.log(`Looking for order with ID: ${id}`);
+      
+      // Find all orders and pick the one with matching ID
+      const orders = await this.prisma.order.findMany({
         include: {
           items: {
             include: { product: true }
           }
         }
       });
-
+      
+      // Find the order with matching numeric ID
+      const order = orders.find(o => {
+        try {
+          return parseInt(o.id) === parseInt(id.toString());
+        } catch (e) {
+          return false;
+        }
+      });
+      
+      console.log(`Found order:`, order ? `ID ${order.id}` : 'None');
+      
       if (!order) return undefined;
 
       return {
@@ -429,6 +481,7 @@ export class PrismaStorage implements IStorage {
         status: order.status,
         total: order.total,
         shippingAddress: order.shippingAddress,
+        paymentMethod: order.paymentMethod || "credit-card",
         createdAt: order.createdAt,
         items: order.items.map(item => ({
           id: parseInt(item.id),
@@ -522,8 +575,28 @@ export class PrismaStorage implements IStorage {
 
   async updateOrderStatus(id: number, status: string): Promise<Order | undefined> {
     try {
+      console.log(`Updating order ${id} status to ${status}`);
+      
+      // First find the order with matching numeric ID
+      const orders = await this.prisma.order.findMany();
+      const orderToUpdate = orders.find(o => {
+        try {
+          return parseInt(o.id) === parseInt(id.toString());
+        } catch (e) {
+          return false;
+        }
+      });
+      
+      if (!orderToUpdate) {
+        console.error(`Order with ID ${id} not found for status update`);
+        return undefined;
+      }
+      
+      console.log(`Found MongoDB order with ID: ${orderToUpdate.id}`);
+      
+      // Update the order with the MongoDB ObjectId
       const order = await this.prisma.order.update({
-        where: { id: String(id) },
+        where: { id: orderToUpdate.id },
         data: { status }
       });
 
