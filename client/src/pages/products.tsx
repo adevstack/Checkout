@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Product } from "@shared/schema";
+import { useAuth } from "@/hooks/use-auth";
 import ProductCard from "@/components/product-card";
+import { ProductCategories } from "@/components/product-categories";
+import { ResetProducts } from "@/components/admin/reset-products";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,6 +19,7 @@ export default function Products() {
   const [location] = useLocation();
   const searchParams = new URLSearchParams(location.split('?')[1] || '');
   const initialCategory = searchParams.get("category") || "";
+  const { user } = useAuth();
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>(
@@ -221,6 +225,11 @@ export default function Products() {
           <MobileFilters />
         </div>
       </div>
+      
+      {/* Product Categories */}
+      <div className="mt-6">
+        <ProductCategories />
+      </div>
 
       <div className="pt-6 pb-24 lg:grid lg:grid-cols-3 lg:gap-x-8 xl:grid-cols-4">
         {/* Desktop Filters sidebar */}
@@ -412,6 +421,13 @@ export default function Products() {
               >
                 Clear Filters
               </Button>
+            </div>
+          )}
+          
+          {/* Admin Tools - Reset Products */}
+          {user?.isAdmin && (
+            <div className="mt-12 pt-8 border-t dark:border-gray-700">
+              <ResetProducts />
             </div>
           )}
         </div>
