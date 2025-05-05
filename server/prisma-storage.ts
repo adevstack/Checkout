@@ -169,27 +169,55 @@ export class PrismaStorage implements IStorage {
   // Cart operations
   async getCartItems(userId: number): Promise<CartItemWithProduct[]> {
     try {
-      // Convert userId to a proper MongoDB ObjectId format if needed
-      // For safety, handle query without where clause if userId is problematic
-      let query: any = {
-        include: { product: true }
-      };
+      // Convert userId to a string for MongoDB
+      const userIdStr = userId.toString();
       
-      // Only add where clause if we can create a valid MongoDB ObjectID
-      if (userId) {
-        query.where = { userId: userId.toString() };
-      }
+      // Use a type-safe approach to querying
+      const cartItems = await this.prisma.cartItem.findMany({
+        where: {
+          userId: userIdStr
+        },
+        include: {
+          product: true // This ensures we get the joined product data
+        }
+      });
       
-      const cartItems = await this.prisma.cartItem.findMany(query);
-      
-      return cartItems.map(item => ({
-        id: parseInt(item.id),
-        userId: parseInt(item.userId),
-        productId: parseInt(item.productId),
-        quantity: item.quantity,
-        createdAt: item.createdAt,
-        product: this.mapPrismaProductToProduct(item.product)
-      }));
+      // Map cart items to our schema format
+      return cartItems.map(item => {
+        // We check if item has the product property before accessing it
+        if (!item.product) {
+          console.error(`No product found for cart item with productId ${item.productId}`);
+          // Return a partially complete cart item without product data
+          return {
+            id: parseInt(item.id),
+            userId: parseInt(item.userId),
+            productId: parseInt(item.productId),
+            quantity: item.quantity,
+            createdAt: item.createdAt,
+            product: {
+              id: parseInt(item.productId),
+              name: "Unknown Product",
+              description: "",
+              price: 0,
+              imageUrl: "",
+              category: "",
+              rating: 0,
+              stock: 0,
+              createdAt: new Date()
+            }
+          };
+        }
+        
+        // If we have the product, we return the full cart item with product data
+        return {
+          id: parseInt(item.id),
+          userId: parseInt(item.userId),
+          productId: parseInt(item.productId),
+          quantity: item.quantity,
+          createdAt: item.createdAt,
+          product: this.mapPrismaProductToProduct(item.product)
+        };
+      });
     } catch (error) {
       console.error("Error in getCartItems:", error);
       return [];
@@ -211,7 +239,7 @@ export class PrismaStorage implements IStorage {
         // Update quantity
         cartItem = await this.prisma.cartItem.update({
           where: { id: existingCartItem.id },
-          data: { quantity: existingCartItem.quantity + cartItemData.quantity }
+          data: { quantity: existingCartItem.quantity + (cartItemData.quantity || 1) }
         });
       } else {
         // Create new cart item
@@ -219,7 +247,7 @@ export class PrismaStorage implements IStorage {
           data: {
             userId: String(cartItemData.userId),
             productId: String(cartItemData.productId),
-            quantity: cartItemData.quantity
+            quantity: cartItemData.quantity || 1
           }
         });
       }

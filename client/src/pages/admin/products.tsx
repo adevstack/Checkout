@@ -460,12 +460,12 @@ export default function AdminProducts() {
                   </TableCell>
                   <TableCell>
                     <Badge
-                      variant={
+                      className={
                         product.stock > 10
-                          ? "success"
+                          ? "bg-green-500 hover:bg-green-600"
                           : product.stock > 0
-                          ? "warning"
-                          : "destructive"
+                          ? "bg-yellow-500 hover:bg-yellow-600"
+                          : "bg-destructive hover:bg-destructive/90"
                       }
                     >
                       {product.stock}
@@ -611,8 +611,11 @@ export default function AdminProducts() {
                           step="0.1"
                           min="0"
                           max="5"
-                          {...field}
+                          name={field.name}
+                          value={field.value?.toString() || "0"}
                           onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                          onBlur={field.onBlur}
+                          ref={field.ref}
                         />
                       </FormControl>
                       <FormMessage />
