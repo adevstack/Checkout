@@ -318,4 +318,4 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// No need to export anything here as db.ts handles storage initialization
