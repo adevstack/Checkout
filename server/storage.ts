@@ -324,6 +324,7 @@ export class MemStorage implements IStorage {
       ...order, 
       id, 
       status: order.status || "pending",
+      paymentMethod: order.paymentMethod || "credit-card",
       createdAt: new Date() 
     };
     this.orders.set(id, newOrder);

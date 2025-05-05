@@ -374,7 +374,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = (req as any).user.id;
       
-      const { shippingAddress, items } = req.body;
+      const { shippingAddress, paymentMethod, items } = req.body;
       
       if (!items || !Array.isArray(items) || items.length === 0) {
         return res.status(400).json({ message: "Order must have at least one item" });
@@ -398,7 +398,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId,
         status: "pending",
         total,
-        shippingAddress
+        shippingAddress,
+        paymentMethod: paymentMethod || "credit-card"
       });
       
       // Create order items

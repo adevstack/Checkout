@@ -88,6 +88,7 @@ export const orders = pgTable("orders", {
   status: text("status").notNull().default("pending"),
   total: doublePrecision("total").notNull(),
   shippingAddress: text("shipping_address").notNull(),
+  paymentMethod: text("payment_method").notNull().default("credit-card"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -96,6 +97,7 @@ export const insertOrderSchema = createInsertSchema(orders).pick({
   status: true,
   total: true,
   shippingAddress: true,
+  paymentMethod: true,
 });
 
 // Order items schema
