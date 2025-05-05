@@ -1,4 +1,6 @@
 import { useAuth } from "@/hooks/use-auth";
+import { useTheme } from "@/hooks/use-theme-provider";
+import { Moon, Sun } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 interface MobileMenuProps {
@@ -8,8 +10,13 @@ interface MobileMenuProps {
 export default function MobileMenu({ onClose }: MobileMenuProps) {
   const [location] = useLocation();
   const { user, login, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
   
   const isActive = (path: string) => location === path;
+  
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
   
   const handleLoginAsUser = () => {
     login({ email: "user@example.com", password: "user123" });
@@ -135,6 +142,28 @@ export default function MobileMenu({ onClose }: MobileMenuProps) {
             </button>
           </div>
         )}
+        
+        {/* Theme Toggle Button */}
+        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <button
+            onClick={toggleTheme}
+            className="flex items-center pl-3 pr-4 py-2 text-base font-medium text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 w-full"
+          >
+            <div className="flex items-center">
+              {theme === "dark" ? (
+                <>
+                  <Sun className="h-5 w-5 mr-3 text-yellow-500" />
+                  <span>Switch to Light Mode</span>
+                </>
+              ) : (
+                <>
+                  <Moon className="h-5 w-5 mr-3 text-indigo-500" />
+                  <span>Switch to Dark Mode</span>
+                </>
+              )}
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   );
